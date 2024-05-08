@@ -1,0 +1,46 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main  # Trigger the workflow only on push to the main branch
+
+jobs:
+  build-and-push-docker-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.4
+  
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3.3.0
+
+      - name: Log in to Docker Hub
+        run: |
+          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/valheimserver:latest .
+          docker push ${{ secrets.DOCKER_USERNAME }}/valheimserver:latest
+
+      - name: List Docker images
+        run: docker images
+
+  deploy-to-server:
+    runs-on: ubuntu-latest
+    needs: build-and-push-docker-image
+    steps:
+      - name: SSH into production server and deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.PRODUCTION_SERVER_HOST }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: sembarang12
+          script: |
+            docker pull ${{ secrets.DOCKER_USERNAME }}/valheimserver:latest
+            docker stop my-app || true
+            docker rm my-app || true
+            docker run -d -p 2456-2458:2456-2458/udp -v valheim_data:/home/steam/valheimserver --name valheimserver ${{ secrets.DOCKER_USERNAME }}/valheimserver:latest
+
