@@ -40,7 +40,7 @@ jobs:
           passphrase: sembarang12
           script: |
             docker pull ${{ secrets.DOCKER_USERNAME }}/valheimserver:latest
-            docker stop my-app || true
-            docker rm my-app || true
+            docker stop valheimserver || true
+            docker rm valheimserver || true
             docker run -d -p 2456-2458:2456-2458/udp -v valheim_data:/home/steam/valheimserver --name valheimserver ${{ secrets.DOCKER_USERNAME }}/valheimserver:latest
 
