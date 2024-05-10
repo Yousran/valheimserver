@@ -27,6 +27,7 @@ ENV PORT=2456 \
     
 VOLUME /home/steam/valheimserver
 
+COPY . /home/steam/valheimserver
 # Set direktori server sebagai direktori kerja
 WORKDIR /home/steam/valheimserver
 
