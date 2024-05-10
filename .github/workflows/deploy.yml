@@ -39,6 +39,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           passphrase: sembarang12
           script: |
+            cd /opt/valheimserver
+            git pull origin
             docker pull ${{ secrets.DOCKER_USERNAME }}/valheimserver:latest
             docker stop valheimserver || true
             docker rm valheimserver || true
