@@ -27,9 +27,9 @@ ENV PORT=2456 \
     
 VOLUME /home/steam/valheimserver
 
-COPY . /home/steam/valheimserver
 # Set direktori server sebagai direktori kerja
 WORKDIR /home/steam/valheimserver
+COPY . /home/steam/valheimserver
 
 # Menjalankan server saat container dijalankan
 CMD ["sh", "-c", "./valheim_server.x86_64 -name ${NAME} -port ${PORT} -world ${WORLD} -password ${PASSWORD} -public ${PUBLIC}"]
